@@ -40,7 +40,7 @@ python manage.py runserver
 Visit `http://127.0.0.1:8000/`, enter two Last.fm usernames, and watch the loading page as the worker fetches data.
 
 ## Deployment (Render free tier)
-- `.render.yaml` is included for a Render Python web service.
+- `render.yaml` is included for a Render Python web service.
 - Set env vars in Render:
   - `DJANGO_SECRET_KEY` (generate a long random string)
   - `LASTFM_API_KEY`
@@ -48,7 +48,7 @@ Visit `http://127.0.0.1:8000/`, enter two Last.fm usernames, and watch the loadi
   - `ALLOWED_HOSTS` (optional; Render hostname auto-added)
   - `CELERY_TASK_ALWAYS_EAGER=1` (defaulted in `.render.yaml` so tasks run inline without Redis on free tier)
 - Build command: `pip install -r requirements.txt && python manage.py collectstatic --noinput`
-- Start command: `gunicorn taste_matchmaker.wsgi:application`
+- Start command: `python manage.py migrate --noinput && gunicorn taste_matchmaker.wsgi:application`
 - Static files are served via WhiteNoise; no extra CDN or Nginx config required on Render.
 - If you later add Redis + a Celery worker service, set `CELERY_TASK_ALWAYS_EAGER=0` and add a worker process: `celery -A taste_matchmaker worker -l info`.
 
