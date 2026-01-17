@@ -51,6 +51,7 @@ Visit `http://127.0.0.1:8000/`, enter two Last.fm usernames, and watch the loadi
 - Start command: `python manage.py migrate --noinput && gunicorn taste_matchmaker.wsgi:application`
 - Static files are served via WhiteNoise; no extra CDN or Nginx config required on Render.
 - If you later add Redis + a Celery worker service, set `CELERY_TASK_ALWAYS_EAGER=0` and add a worker process: `celery -A taste_matchmaker worker -l info`.
+- To test locally with production settings: set `DEBUG=0` and (optionally) `WHITENOISE_USE_FINDERS=1`, run `python manage.py collectstatic --noinput`, then `python manage.py runserver --insecure` to confirm static assets load.
 
 ## Notes
 - API calls are cached: user info (24h) and top artists (12h) per user+period+limit.

@@ -93,12 +93,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-WHITENOISE_USE_FINDERS = DEBUG or os.environ.get("WHITENOISE_USE_FINDERS", "0").lower() in {
-    "1",
-    "true",
-    "yes",
-    "on",
-}
+WHITENOISE_USE_FINDERS = True
 if whitenoise:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
