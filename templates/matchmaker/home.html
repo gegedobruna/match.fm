@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Taste Matchmaker</title>
+    <link rel="stylesheet" href="{% static 'matchmaker/app.css' %}">
+</head>
+<body>
+<main class="container">
+    <div class="nav">
+        <div class="brand">
+            <img src="{% static 'matchmaker/match-fm-logo.png' %}" alt="match.fm">
+        </div>
+        <div class="pill">Powered by Last.fm</div>
+    </div>
+
+    <header class="card">
+        <h1 class="h1">match.fm: compare two listeners instantly</h1>
+        <p class="sub">We pull top artists from Last.fm and show how closely two people line up. Works with public Last.fm profiles.</p>
+        <form method="post" class="grid form-row">
+            {% csrf_token %}
+            <div>
+                <label for="{{ form.username_a.id_for_label }}">Username A</label>
+                {{ form.username_a }}
+                <div class="small">Example: your_username</div>
+            </div>
+            <div>
+                <label for="{{ form.username_b.id_for_label }}">Username B</label>
+                {{ form.username_b }}
+                <div class="small">Example: friend_username</div>
+            </div>
+            {% if form.errors %}
+                <div class="errors" style="grid-column: 1 / -1;">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div style="grid-column: 1 / -1; display:flex; justify-content:flex-start;">
+                <button class="btn" type="submit">See the match</button>
+            </div>
+        </form>
+    </header>
+</main>
+</body>
+</html>

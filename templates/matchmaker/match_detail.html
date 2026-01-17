@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Taste Matchmaker Result</title>
+    <link rel="stylesheet" href="{% static 'matchmaker/app.css' %}">
+</head>
+<body>
+<main class="container">
+    <div class="nav">
+        <a class="brand" href="{% url 'home' %}">
+            <img src="{% static 'matchmaker/match-fm-logo.png' %}" alt="match.fm">
+        </a>
+        <div class="pill">Report</div>
+    </div>
+
+    {% if error %}
+        <section class="card">
+            <h1 class="h1">Couldn’t fetch data</h1>
+            <p class="sub">Check the username or try again for {{ match.user_a.username }} × {{ match.user_b.username }}.</p>
+            <div class="small">{{ error }}</div>
+            <div style="margin-top:12px;">
+                <a class="btn" href="{% url 'home' %}">Start a new match</a>
+            </div>
+        </section>
+    {% else %}
+        <header class="card">
+            <h1 class="h1">match.fm: {{ user_a.username }} × {{ user_b.username }}</h1>
+            <p class="sub">Based on top artists (Last 3 months weighted most)</p>
+            <div class="kpi" style="align-items:flex-end; gap:12px;">
+                {% with score=result.final_score|default:0 %}
+                    <div class="score">
+                        <div class="pct">{{ score|floatformat:1 }}%</div>
+                        <div class="label">
+                            {% if score < 25 %}
+                                Different worlds
+                            {% elif score < 50 %}
+                                Some overlap
+                            {% elif score < 75 %}
+                                Solid match
+                            {% else %}
+                                Scarily aligned
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endwith %}
+                <button class="btn" type="button" onclick="navigator.clipboard.writeText(window.location.href)">Copy link</button>
+            </div>
+            {% if result.warning %}
+                <p class="sub" style="margin-top:6px;">{{ result.warning }}</p>
+            {% endif %}
+            <div class="footer-note">
+                Compared top 300 artists per period • Last updated: {{ match.updated_at|date:"M j, Y, H:i" }} • Cached for 12 hours
+            </div>
+        </header>
+
+        <section class="card">
+            <div class="grid grid-2">
+                <div class="card" style="padding:16px;">
+                    <div class="kpi">
+                        <div class="name">Last 3 months</div>
+                        {% widthratio result.scores.3month|default:0 1 100 as score_3m %}
+                        <div class="val">{{ score_3m|floatformat:1 }}%</div>
+                    </div>
+                </div>
+                <div class="card" style="padding:16px;">
+                    <div class="kpi">
+                        <div class="name">Last 12 months</div>
+                        {% widthratio result.scores.12month|default:0 1 100 as score_12m %}
+                        <div class="val">{{ score_12m|floatformat:1 }}%</div>
+                    </div>
+                </div>
+                <div class="card" style="padding:16px;">
+                    <div class="kpi">
+                        <div class="name">All time</div>
+                        {% widthratio result.scores.overall|default:0 1 100 as score_overall %}
+                        <div class="val">{{ score_overall|floatformat:1 }}%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card grid grid-2">
+            <div>
+                <h2 class="h1" style="font-size:24px;">Shared obsessions</h2>
+                {% if result.overlap %}
+                    <ul class="list">
+                        {% for item in result.overlap %}
+                            <li>
+                                <div>{{ item.artist }}</div>
+                                <div class="small">A: {{ item.a_weight|floatformat:2 }} • B: {{ item.b_weight|floatformat:2 }}</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="sub">No obvious overlap yet.</p>
+                {% endif %}
+            </div>
+            <div>
+                <h2 class="h1" style="font-size:24px;">Recommendations</h2>
+                <div class="kpi">
+                    <div class="name">For {{ user_a.username }}</div>
+                    <div class="name">For {{ user_b.username }}</div>
+                </div>
+                <div class="grid" style="grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+                    <div class="card" style="padding:12px;">
+                        {% if result.recs_for_a %}
+                            <ul class="list">
+                                {% for item in result.recs_for_a %}
+                                    <li>
+                                        <div>{{ item.artist }}</div>
+                                        <div class="small">Weight {{ item.weight|floatformat:2 }}</div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="sub">They’re already aligned.</p>
+                        {% endif %}
+                    </div>
+                    <div class="card" style="padding:12px;">
+                        {% if result.recs_for_b %}
+                            <ul class="list">
+                                {% for item in result.recs_for_b %}
+                                    <li>
+                                        <div>{{ item.artist }}</div>
+                                        <div class="small">Weight {{ item.weight|floatformat:2 }}</div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="sub">They’re already aligned.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+</main>
+</body>
+</html>

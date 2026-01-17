@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matching...</title>
+    <link rel="stylesheet" href="{% static 'matchmaker/app.css' %}">
+</head>
+<body>
+<main class="container">
+    <div class="nav">
+        <div class="brand">
+            <img src="{% static 'matchmaker/match-fm-logo.png' %}" alt="match.fm">
+        </div>
+        <div class="pill">Fetching</div>
+    </div>
+    <div class="card center">
+        <div class="spinner"></div>
+        <h2 class="h1">Crunching the numbers...</h2>
+        <p class="sub">Hang tight while we fetch stats from Last.fm.</p>
+    </div>
+</main>
+<script>
+    const checkStatus = () => {
+        fetch("{% url 'match_status' match.uuid %}")
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === "READY" && data.redirect) {
+                    window.location = data.redirect;
+                } else if (data.status === "FAILED") {
+                    window.location.reload();
+                }
+            })
+            .catch(() => {});
+    };
+    setInterval(checkStatus, 1500);
+</script>
+</body>
+</html>

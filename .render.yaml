@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: match-fm
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn taste_matchmaker.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: taste_matchmaker.settings
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: CELERY_TASK_ALWAYS_EAGER
+        value: "1" # free tier: run tasks inline (no Redis)
