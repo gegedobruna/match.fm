@@ -45,7 +45,7 @@
                         </div>
                     </div>
                 {% endwith %}
-                <button class="btn" type="button" onclick="navigator.clipboard.writeText(window.location.href)">Copy link</button>
+                <button class="btn" type="button" data-copy-link>Copy link</button>
             </div>
             {% if result.warning %}
                 <p class="sub" style="margin-top:6px;">{{ result.warning }}</p>
@@ -146,5 +146,6 @@
         </a>
     </footer>
 </main>
+<script defer src="{% static 'matchmaker/app.js' %}"></script>
 </body>
 </html>

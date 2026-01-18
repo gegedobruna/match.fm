@@ -6,7 +6,7 @@
     <title>Matching...</title>
     <link rel="stylesheet" href="{% static 'matchmaker/app.css' %}">
 </head>
-<body>
+<body data-status-url="{% url 'match_status' match.uuid %}" data-refresh-ms="1500">
 <main class="container">
     <div class="nav">
         <div class="brand">
@@ -19,21 +19,16 @@
         <h2 class="h1">Crunching the numbers...</h2>
         <p class="sub">Hang tight while we fetch stats from Last.fm.</p>
     </div>
+    <footer class="site-footer">
+        <div>Built by Gegë Dobruna</div>
+        <a class="github" href="https://github.com/gegedobruna/match.fm" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.5v-1.77c-2.78.61-3.37-1.2-3.37-1.2-.45-1.18-1.1-1.5-1.1-1.5-.9-.63.07-.62.07-.62 1 .07 1.52 1.05 1.52 1.05.89 1.56 2.34 1.11 2.9.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.09 0-1.13.39-2.06 1.03-2.79-.1-.26-.45-1.3.1-2.7 0 0 .85-.28 2.8 1.06a9.42 9.42 0 0 1 5.1 0c1.94-1.34 2.79-1.06 2.79-1.06.55 1.4.2 2.44.1 2.7.64.73 1.03 1.66 1.03 2.79 0 3.96-2.34 4.82-4.57 5.08.36.32.68.94.68 1.9v2.82c0 .27.18.59.68.49A10 10 0 0 0 22 12.27C22 6.58 17.52 2 12 2Z"/>
+            </svg>
+            <span>github.com/gegedobruna/match.fm</span>
+        </a>
+    </footer>
 </main>
-<script>
-    const checkStatus = () => {
-        fetch("{% url 'match_status' match.uuid %}")
-            .then(r => r.json())
-            .then(data => {
-                if (data.status === "READY" && data.redirect) {
-                    window.location = data.redirect;
-                } else if (data.status === "FAILED") {
-                    window.location.reload();
-                }
-            })
-            .catch(() => {});
-    };
-    setInterval(checkStatus, 1500);
-</script>
+<script defer src="{% static 'matchmaker/app.js' %}"></script>
 </body>
 </html>

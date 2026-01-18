@@ -33,7 +33,7 @@ def home(request: HttpRequest) -> HttpResponse:
             else:
                 match = MatchRequest.objects.create(user_a=user_a, user_b=user_b, status="PENDING")
                 try:
-                    run_match.delay(str(match.uuid))
+                    run_match(str(match.uuid))
                 except Exception as exc:
                     match.status = "FAILED"
                     match.error_message = str(exc)
